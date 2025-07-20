@@ -12,6 +12,7 @@ export default function Index() {
       </View>
     </ScrollView>
   );
+}
 
 const styles = StyleSheet.create({
   container: {
