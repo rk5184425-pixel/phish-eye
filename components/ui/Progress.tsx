@@ -1,19 +1,37 @@
 import React from 'react';
-import { View } from 'react-native';
-import { cn } from '../lib/utils';
+import { View, StyleSheet } from 'react-native';
 
 interface ProgressProps {
   value: number;
-  className?: string;
+  style?: any;
 }
 
-export function Progress({ value, className }: ProgressProps) {
+export function Progress({ value, style }: ProgressProps) {
+  const progressValue = Math.min(100, Math.max(0, value));
+  
   return (
-    <View className={cn('relative h-4 w-full overflow-hidden rounded-full bg-secondary', className)}>
+    <View style={[styles.container, style]}>
       <View
-        className="h-full bg-primary transition-all"
-        style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+        style={[
+          styles.progress,
+          { width: `${progressValue}%` }
+        ]}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    height: 16,
+    width: '100%',
+    backgroundColor: '#64748b',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  progress: {
+    height: '100%',
+    backgroundColor: '#22c55e',
+    borderRadius: 8,
+  },
+});

@@ -1,29 +1,28 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
-import { cn } from '../lib/utils';
+import React from 'react';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 interface TabsProps {
   value: string;
   onValueChange: (value: string) => void;
   children: React.ReactNode;
-  className?: string;
+  style?: any;
 }
 
 interface TabsListProps {
   children: React.ReactNode;
-  className?: string;
+  style?: any;
 }
 
 interface TabsTriggerProps {
   value: string;
   children: React.ReactNode;
-  className?: string;
+  style?: any;
 }
 
 interface TabsContentProps {
   value: string;
   children: React.ReactNode;
-  className?: string;
+  style?: any;
 }
 
 const TabsContext = React.createContext<{
@@ -34,45 +33,48 @@ const TabsContext = React.createContext<{
   onValueChange: () => {},
 });
 
-export function Tabs({ value, onValueChange, children, className }: TabsProps) {
+export function Tabs({ value, onValueChange, children, style }: TabsProps) {
   return (
     <TabsContext.Provider value={{ value, onValueChange }}>
-      <View className={cn('w-full', className)}>
+      <View style={[styles.tabs, style]}>
         {children}
       </View>
     </TabsContext.Provider>
   );
 }
 
-export function TabsList({ children, className }: TabsListProps) {
+export function TabsList({ children, style }: TabsListProps) {
   return (
-    <View className={cn('inline-flex h-10 items-center justify-center rounded-md bg-muted p-1', className)}>
+    <View style={[styles.tabsList, style]}>
       {children}
     </View>
   );
 }
 
-export function TabsTrigger({ value: triggerValue, children, className }: TabsTriggerProps) {
+export function TabsTrigger({ value: triggerValue, children, style }: TabsTriggerProps) {
   const { value, onValueChange } = React.useContext(TabsContext);
   const isActive = value === triggerValue;
 
   return (
     <TouchableOpacity
       onPress={() => onValueChange(triggerValue)}
-      className={cn(
-        'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all',
-        isActive ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground',
-        className
-      )}
+      style={[
+        styles.tabsTrigger,
+        isActive ? styles.tabsTriggerActive : styles.tabsTriggerInactive,
+        style
+      ]}
     >
-      <Text className={cn('text-sm font-medium', isActive ? 'text-foreground' : 'text-muted-foreground')}>
+      <Text style={[
+        styles.tabsTriggerText,
+        isActive ? styles.tabsTriggerTextActive : styles.tabsTriggerTextInactive
+      ]}>
         {children}
       </Text>
     </TouchableOpacity>
   );
 }
 
-export function TabsContent({ value: contentValue, children, className }: TabsContentProps) {
+export function TabsContent({ value: contentValue, children, style }: TabsContentProps) {
   const { value } = React.useContext(TabsContext);
   
   if (value !== contentValue) {
@@ -80,8 +82,49 @@ export function TabsContent({ value: contentValue, children, className }: TabsCo
   }
 
   return (
-    <View className={cn('mt-2', className)}>
+    <View style={[styles.tabsContent, style]}>
       {children}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  tabs: {
+    width: '100%',
+  },
+  tabsList: {
+    flexDirection: 'row',
+    height: 40,
+    backgroundColor: '#334155',
+    borderRadius: 8,
+    padding: 4,
+    marginBottom: 16,
+  },
+  tabsTrigger: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  tabsTriggerActive: {
+    backgroundColor: '#0f172a',
+  },
+  tabsTriggerInactive: {
+    backgroundColor: 'transparent',
+  },
+  tabsTriggerText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  tabsTriggerTextActive: {
+    color: '#f1f5f9',
+  },
+  tabsTriggerTextInactive: {
+    color: '#94a3b8',
+  },
+  tabsContent: {
+    marginTop: 8,
+  },
+});

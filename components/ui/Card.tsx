@@ -1,68 +1,103 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { cn } from '../lib/utils';
+import { View, Text, StyleSheet } from 'react-native';
 
 interface CardProps {
   children: React.ReactNode;
-  className?: string;
+  style?: any;
 }
 
 interface CardHeaderProps {
   children: React.ReactNode;
-  className?: string;
+  style?: any;
 }
 
 interface CardTitleProps {
   children: React.ReactNode;
-  className?: string;
+  style?: any;
 }
 
 interface CardDescriptionProps {
   children: React.ReactNode;
-  className?: string;
+  style?: any;
 }
 
 interface CardContentProps {
   children: React.ReactNode;
-  className?: string;
+  style?: any;
 }
 
-export function Card({ children, className }: CardProps) {
+export function Card({ children, style }: CardProps) {
   return (
-    <View className={cn('rounded-lg border border-border bg-card p-6 shadow-sm', className)}>
+    <View style={[styles.card, style]}>
       {children}
     </View>
   );
 }
 
-export function CardHeader({ children, className }: CardHeaderProps) {
+export function CardHeader({ children, style }: CardHeaderProps) {
   return (
-    <View className={cn('flex flex-col space-y-1.5 pb-6', className)}>
+    <View style={[styles.header, style]}>
       {children}
     </View>
   );
 }
 
-export function CardTitle({ children, className }: CardTitleProps) {
+export function CardTitle({ children, style }: CardTitleProps) {
   return (
-    <Text className={cn('text-2xl font-semibold leading-none tracking-tight text-card-foreground', className)}>
+    <Text style={[styles.title, style]}>
       {children}
     </Text>
   );
 }
 
-export function CardDescription({ children, className }: CardDescriptionProps) {
+export function CardDescription({ children, style }: CardDescriptionProps) {
   return (
-    <Text className={cn('text-sm text-muted-foreground', className)}>
+    <Text style={[styles.description, style]}>
       {children}
     </Text>
   );
 }
 
-export function CardContent({ children, className }: CardContentProps) {
+export function CardContent({ children, style }: CardContentProps) {
   return (
-    <View className={cn('pt-0', className)}>
+    <View style={[styles.content, style]}>
       {children}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#334155',
+    backgroundColor: '#1e293b',
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  header: {
+    flexDirection: 'column',
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#f1f5f9',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 14,
+    color: '#94a3b8',
+    lineHeight: 20,
+  },
+  content: {
+    paddingTop: 0,
+  },
+});

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Alert } from 'react-native';
+import { View, Text, ScrollView, Alert, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from './ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
@@ -33,7 +33,7 @@ export function FraudAnalyzer() {
   const [urlResult, setUrlResult] = useState<AnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState('email');
 
-  // Enhanced fraud detection algorithms (same as original)
+  // Enhanced fraud detection algorithms
   const suspiciousEmails = [
     "support@paypal.verify.com", "admin@updatemybank.ru", "security@bankofamerica-update.com",
     "noreply@amazon.secure-verify.net", "account@microsoft-security.co", "service@apple-id-locked.org"
@@ -60,11 +60,6 @@ export function FraudAnalyzer() {
   const extractEmailFromContent = (content: string): string | null => {
     const emailMatch = content.match(/from:\s*([^\s@]+@[^\s@]+\.[^\s@]+)/i);
     return emailMatch ? emailMatch[1].toLowerCase() : null;
-  };
-
-  const extractLinksFromContent = (content: string): string[] => {
-    const linkRegex = /https?:\/\/[^\s<>"]+/gi;
-    return content.match(linkRegex) || [];
   };
 
   const analyzeEmailSender = (content: string): { flags: any[], score: number } => {
@@ -306,15 +301,6 @@ export function FraudAnalyzer() {
     }
   };
 
-  const getScoreColor = (level: string) => {
-    switch (level) {
-      case 'safe': return 'safe';
-      case 'suspicious': return 'warning';
-      case 'danger': return 'danger';
-      default: return 'secondary';
-    }
-  };
-
   const getScoreIcon = (level: string) => {
     switch (level) {
       case 'safe': return 'checkmark-circle';
@@ -328,63 +314,63 @@ export function FraudAnalyzer() {
     const scoreIcon = getScoreIcon(result.level);
     
     return (
-      <Card className="mt-6">
+      <Card style={styles.resultCard}>
         <CardHeader>
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center space-x-3">
+          <View style={styles.resultHeader}>
+            <View style={styles.resultHeaderLeft}>
               <Ionicons name={scoreIcon as any} size={24} color="#22c55e" />
-              <View>
-                <CardTitle className="text-lg">Analysis Result</CardTitle>
+              <View style={styles.resultHeaderText}>
+                <CardTitle style={styles.resultTitle}>Analysis Result</CardTitle>
                 <CardDescription>{result.analysis}</CardDescription>
               </View>
             </View>
-            <View className="items-end">
-              <Text className="text-2xl font-bold text-foreground">{result.score}/100</Text>
-              <Badge variant={result.level === 'safe' ? 'default' : 'destructive'} className="mt-1">
+            <View style={styles.resultHeaderRight}>
+              <Text style={styles.scoreText}>{result.score}/100</Text>
+              <Badge variant={result.level === 'safe' ? 'default' : 'destructive'} style={styles.levelBadge}>
                 {result.level.toUpperCase()}
               </Badge>
             </View>
           </View>
         </CardHeader>
         
-        <CardContent className="space-y-4">
+        <CardContent style={styles.resultContent}>
           {result.domainInfo && (
-            <View className="grid grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
-              <View>
-                <Text className="text-sm font-medium text-foreground">Domain</Text>
-                <Text className="text-sm text-muted-foreground">{result.domainInfo.domain}</Text>
+            <View style={styles.domainInfo}>
+              <View style={styles.domainInfoItem}>
+                <Text style={styles.domainInfoLabel}>Domain</Text>
+                <Text style={styles.domainInfoValue}>{result.domainInfo.domain}</Text>
               </View>
-              <View>
-                <Text className="text-sm font-medium text-foreground">Age</Text>
-                <Text className="text-sm text-muted-foreground">{result.domainInfo.age}</Text>
+              <View style={styles.domainInfoItem}>
+                <Text style={styles.domainInfoLabel}>Age</Text>
+                <Text style={styles.domainInfoValue}>{result.domainInfo.age}</Text>
               </View>
-              <View>
-                <Text className="text-sm font-medium text-foreground">Reputation</Text>
-                <Text className="text-sm text-muted-foreground">{result.domainInfo.reputation}</Text>
+              <View style={styles.domainInfoItem}>
+                <Text style={styles.domainInfoLabel}>Reputation</Text>
+                <Text style={styles.domainInfoValue}>{result.domainInfo.reputation}</Text>
               </View>
             </View>
           )}
 
           {result.flags.length > 0 && (
-            <View>
-              <View className="flex-row items-center space-x-2 mb-3">
+            <View style={styles.flagsSection}>
+              <View style={styles.flagsHeader}>
                 <Ionicons name="warning" size={16} color="#f59e0b" />
-                <Text className="font-medium text-foreground">
+                <Text style={styles.flagsTitle}>
                   Red Flags Detected ({result.flags.length})
                 </Text>
               </View>
-              <View className="space-y-2">
+              <View style={styles.flagsList}>
                 {result.flags.map((flag, index) => (
-                  <View key={index} className="flex-row items-start space-x-3 p-3 bg-muted rounded-lg">
+                  <View key={index} style={styles.flagItem}>
                     <Badge 
                       variant={flag.severity === 'high' ? 'destructive' : 'secondary'}
-                      className="mt-0.5"
+                      style={styles.flagBadge}
                     >
                       {flag.severity}
                     </Badge>
-                    <View className="flex-1">
-                      <Text className="font-medium text-sm text-foreground">{flag.type}</Text>
-                      <Text className="text-sm text-muted-foreground">{flag.description}</Text>
+                    <View style={styles.flagContent}>
+                      <Text style={styles.flagType}>{flag.type}</Text>
+                      <Text style={styles.flagDescription}>{flag.description}</Text>
                     </View>
                   </View>
                 ))}
@@ -393,9 +379,9 @@ export function FraudAnalyzer() {
           )}
 
           {result.flags.length === 0 && (
-            <View className="flex-row items-center space-x-2 p-4 bg-safe/10 rounded-lg">
+            <View style={styles.noFlags}>
               <Ionicons name="checkmark-circle" size={20} color="#22c55e" />
-              <Text className="font-medium text-safe">No red flags detected - appears legitimate</Text>
+              <Text style={styles.noFlagsText}>No red flags detected - appears legitimate</Text>
             </View>
           )}
         </CardContent>
@@ -404,41 +390,35 @@ export function FraudAnalyzer() {
   };
 
   return (
-    <ScrollView className="flex-1 px-4 py-8">
-      <View className="max-w-4xl mx-auto">
-        <View className="text-center mb-8">
-          <View className="flex-row items-center justify-center space-x-3 mb-4">
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.headerTitle}>
             <Ionicons name="shield" size={32} color="#22c55e" />
-            <Text className="text-3xl font-bold text-primary">
+            <Text style={styles.title}>
               PhishEye Fraud Analyzer
             </Text>
           </View>
-          <Text className="text-muted-foreground text-center max-w-2xl mx-auto">
+          <Text style={styles.subtitle}>
             Advanced AI-powered analysis to detect phishing emails, suspicious websites, and fraud attempts. 
             Protect yourself and your organization from cyber threats.
           </Text>
         </View>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} style={styles.tabs}>
+          <TabsList style={styles.tabsList}>
             <TabsTrigger value="email">
-              <View className="flex-row items-center space-x-2">
-                <Ionicons name="mail" size={16} color="#64748b" />
-                <Text>Email Analysis</Text>
-              </View>
+              Email Analysis
             </TabsTrigger>
             <TabsTrigger value="website">
-              <View className="flex-row items-center space-x-2">
-                <Ionicons name="globe" size={16} color="#64748b" />
-                <Text>Website Analysis</Text>
-              </View>
+              Website Analysis
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="email" className="space-y-6">
+          <TabsContent value="email" style={styles.tabContent}>
             <Card>
               <CardHeader>
-                <View className="flex-row items-center space-x-2">
+                <View style={styles.cardHeaderWithIcon}>
                   <Ionicons name="mail" size={20} color="#22c55e" />
                   <CardTitle>Email Content Analysis</CardTitle>
                 </View>
@@ -446,23 +426,23 @@ export function FraudAnalyzer() {
                   Paste the suspicious email content below for comprehensive fraud analysis
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent style={styles.cardContent}>
                 <Input
                   placeholder="Paste the email content here (headers, body, links, etc.)..."
                   value={emailContent}
                   onChangeText={setEmailContent}
                   multiline
                   numberOfLines={8}
-                  className="font-mono text-sm"
+                  style={styles.emailInput}
                 />
                 
                 {isAnalyzing && (
-                  <View className="space-y-2">
-                    <View className="flex-row items-center space-x-2">
+                  <View style={styles.analyzing}>
+                    <View style={styles.analyzingHeader}>
                       <Ionicons name="scan" size={16} color="#22c55e" />
-                      <Text className="text-sm text-foreground">Analyzing email content...</Text>
+                      <Text style={styles.analyzingText}>Analyzing email content...</Text>
                     </View>
-                    <Progress value={progress} className="w-full" />
+                    <Progress value={progress} style={styles.progress} />
                   </View>
                 )}
 
@@ -471,7 +451,7 @@ export function FraudAnalyzer() {
                   disabled={isAnalyzing || !emailContent.trim()}
                   variant="scan"
                   loading={isAnalyzing}
-                  className="w-full"
+                  style={styles.analyzeButton}
                 >
                   {isAnalyzing ? "Analyzing..." : "Analyze Email"}
                 </Button>
@@ -481,10 +461,10 @@ export function FraudAnalyzer() {
             {emailResult && renderResult(emailResult)}
           </TabsContent>
 
-          <TabsContent value="website" className="space-y-6">
+          <TabsContent value="website" style={styles.tabContent}>
             <Card>
               <CardHeader>
-                <View className="flex-row items-center space-x-2">
+                <View style={styles.cardHeaderWithIcon}>
                   <Ionicons name="globe" size={20} color="#22c55e" />
                   <CardTitle>Website Security Analysis</CardTitle>
                 </View>
@@ -492,7 +472,7 @@ export function FraudAnalyzer() {
                   Enter a website URL to check for phishing indicators and domain reputation
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent style={styles.cardContent}>
                 <Input
                   placeholder="https://example.com"
                   value={websiteUrl}
@@ -500,12 +480,12 @@ export function FraudAnalyzer() {
                 />
                 
                 {isAnalyzing && (
-                  <View className="space-y-2">
-                    <View className="flex-row items-center space-x-2">
+                  <View style={styles.analyzing}>
+                    <View style={styles.analyzingHeader}>
                       <Ionicons name="scan" size={16} color="#22c55e" />
-                      <Text className="text-sm text-foreground">Checking domain reputation and security...</Text>
+                      <Text style={styles.analyzingText}>Checking domain reputation and security...</Text>
                     </View>
-                    <Progress value={progress} className="w-full" />
+                    <Progress value={progress} style={styles.progress} />
                   </View>
                 )}
 
@@ -514,7 +494,7 @@ export function FraudAnalyzer() {
                   disabled={isAnalyzing || !websiteUrl.trim()}
                   variant="scan"
                   loading={isAnalyzing}
-                  className="w-full"
+                  style={styles.analyzeButton}
                 >
                   {isAnalyzing ? "Analyzing..." : "Analyze Website"}
                 </Button>
@@ -528,3 +508,180 @@ export function FraudAnalyzer() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+  },
+  content: {
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
+    paddingHorizontal: 16,
+    paddingVertical: 32,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  headerTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#22c55e',
+    marginLeft: 12,
+  },
+  subtitle: {
+    color: '#94a3b8',
+    textAlign: 'center',
+    maxWidth: 600,
+    lineHeight: 20,
+  },
+  tabs: {
+    width: '100%',
+  },
+  tabsList: {
+    marginBottom: 24,
+  },
+  tabContent: {
+    gap: 24,
+  },
+  cardHeaderWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  cardContent: {
+    gap: 16,
+  },
+  emailInput: {
+    fontFamily: 'monospace',
+    fontSize: 14,
+  },
+  analyzing: {
+    gap: 8,
+  },
+  analyzingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  analyzingText: {
+    fontSize: 14,
+    color: '#f1f5f9',
+  },
+  progress: {
+    width: '100%',
+  },
+  analyzeButton: {
+    width: '100%',
+  },
+  resultCard: {
+    marginTop: 24,
+  },
+  resultHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  resultHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
+    gap: 12,
+  },
+  resultHeaderText: {
+    flex: 1,
+  },
+  resultTitle: {
+    fontSize: 18,
+  },
+  resultHeaderRight: {
+    alignItems: 'flex-end',
+  },
+  scoreText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#f1f5f9',
+  },
+  levelBadge: {
+    marginTop: 4,
+  },
+  resultContent: {
+    gap: 16,
+  },
+  domainInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#334155',
+    borderRadius: 8,
+  },
+  domainInfoItem: {
+    flex: 1,
+  },
+  domainInfoLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#f1f5f9',
+  },
+  domainInfoValue: {
+    fontSize: 14,
+    color: '#94a3b8',
+  },
+  flagsSection: {
+    gap: 12,
+  },
+  flagsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  flagsTitle: {
+    fontWeight: '500',
+    color: '#f1f5f9',
+  },
+  flagsList: {
+    gap: 8,
+  },
+  flagItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    padding: 12,
+    backgroundColor: '#334155',
+    borderRadius: 8,
+  },
+  flagBadge: {
+    marginTop: 2,
+  },
+  flagContent: {
+    flex: 1,
+  },
+  flagType: {
+    fontWeight: '500',
+    fontSize: 14,
+    color: '#f1f5f9',
+  },
+  flagDescription: {
+    fontSize: 14,
+    color: '#94a3b8',
+  },
+  noFlags: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 16,
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    borderRadius: 8,
+  },
+  noFlagsText: {
+    fontWeight: '500',
+    color: '#22c55e',
+  },
+});

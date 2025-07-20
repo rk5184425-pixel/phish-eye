@@ -1,15 +1,24 @@
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, StyleSheet } from 'react-native';
 import { FraudAnalyzer } from '../components/FraudAnalyzer';
 import { SecurityFeatures } from '../components/SecurityFeatures';
 
 export default function Index() {
   return (
-    <ScrollView className="flex-1 bg-background">
-      <View className="flex-1">
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
         <FraudAnalyzer />
         <SecurityFeatures />
       </View>
     </ScrollView>
   );
-}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+  },
+  content: {
+    flex: 1,
+  },
+});

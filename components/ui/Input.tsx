@@ -1,6 +1,5 @@
 import React from 'react';
-import { TextInput, View, Text } from 'react-native';
-import { cn } from '../lib/utils';
+import { TextInput, View, Text, StyleSheet } from 'react-native';
 
 interface InputProps {
   value?: string;
@@ -8,7 +7,7 @@ interface InputProps {
   placeholder?: string;
   multiline?: boolean;
   numberOfLines?: number;
-  className?: string;
+  style?: any;
   label?: string;
 }
 
@@ -18,13 +17,13 @@ export function Input({
   placeholder,
   multiline = false,
   numberOfLines = 1,
-  className,
+  style,
   label,
 }: InputProps) {
   return (
-    <View className="w-full">
+    <View style={styles.container}>
       {label && (
-        <Text className="text-sm font-medium text-foreground mb-2">
+        <Text style={styles.label}>
           {label}
         </Text>
       )}
@@ -35,15 +34,40 @@ export function Input({
         placeholderTextColor="#64748b"
         multiline={multiline}
         numberOfLines={numberOfLines}
-        className={cn(
-          'w-full rounded-md border border-input bg-background px-3 py-2 text-base text-foreground',
-          multiline && 'min-h-[80px] text-top',
-          className
-        )}
-        style={{
-          textAlignVertical: multiline ? 'top' : 'center',
-        }}
+        style={[
+          styles.input,
+          multiline && styles.multiline,
+          style
+        ]}
+        textAlignVertical={multiline ? 'top' : 'center'}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#f1f5f9',
+    marginBottom: 8,
+  },
+  input: {
+    width: '100%',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#334155',
+    backgroundColor: '#0f172a',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#f1f5f9',
+  },
+  multiline: {
+    minHeight: 80,
+    paddingTop: 12,
+  },
+});
