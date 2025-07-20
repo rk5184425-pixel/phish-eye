@@ -1,5 +1,9 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -20,10 +24,27 @@ export function Button({
   loading = false,
   style,
 }: ButtonProps) {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  const tap = Gesture.Tap()
+    .onBegin(() => {
+      scale.value = withSpring(0.95);
+      opacity.value = withTiming(0.8, { duration: 100 });
+    })
+    .onFinalize(() => {
+      scale.value = withSpring(1);
+      opacity.value = withTiming(1, { duration: 100 });
+    });
+
   const getButtonStyle = () => {
     const baseStyle = [styles.button];
     
-    // Variant styles
     switch (variant) {
       case 'destructive':
         baseStyle.push(styles.destructive);
@@ -53,7 +74,6 @@ export function Button({
         baseStyle.push(styles.default);
     }
     
-    // Size styles
     switch (size) {
       case 'sm':
         baseStyle.push(styles.sm);
@@ -102,78 +122,101 @@ export function Button({
   };
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={disabled || loading}
-      style={[...getButtonStyle(), style]}
-    >
-      {loading ? (
-        <ActivityIndicator color="white" size="small" />
-      ) : (
-        <Text style={getTextStyle()}>
-          {children}
-        </Text>
-      )}
-    </TouchableOpacity>
+    <GestureDetector gesture={tap}>
+      <AnimatedTouchable
+        onPress={onPress}
+        disabled={disabled || loading}
+        style={[animatedStyle, ...getButtonStyle(), style]}
+        activeOpacity={0.8}
+      >
+        {loading ? (
+          <ActivityIndicator color="white" size="small" />
+        ) : (
+          <Text style={getTextStyle()}>
+            {children}
+          </Text>
+        )}
+      </AnimatedTouchable>
+    </GestureDetector>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   default: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#10b981',
+    shadowColor: '#10b981',
   },
   destructive: {
     backgroundColor: '#ef4444',
+    shadowColor: '#ef4444',
   },
   outline: {
-    borderWidth: 1,
-    borderColor: '#334155',
+    borderWidth: 2,
+    borderColor: '#374151',
     backgroundColor: 'transparent',
+    shadowOpacity: 0.1,
   },
   secondary: {
-    backgroundColor: '#64748b',
+    backgroundColor: '#6b7280',
+    shadowColor: '#6b7280',
   },
   ghost: {
     backgroundColor: 'transparent',
+    shadowOpacity: 0,
   },
   scan: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#10b981',
+    shadowColor: '#10b981',
   },
   danger: {
-    backgroundColor: '#ef4444',
+    backgroundColor: '#dc2626',
+    shadowColor: '#dc2626',
   },
   warning: {
     backgroundColor: '#f59e0b',
+    shadowColor: '#f59e0b',
   },
   safe: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#059669',
+    shadowColor: '#059669',
   },
   defaultSize: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    minHeight: 48,
   },
   sm: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 40,
   },
   lg: {
     paddingHorizontal: 32,
-    paddingVertical: 16,
+    paddingVertical: 20,
+    minHeight: 56,
   },
   icon: {
     padding: 12,
+    minHeight: 48,
+    minWidth: 48,
   },
   disabled: {
     opacity: 0.5,
+    shadowOpacity: 0,
   },
   text: {
-    fontWeight: '500',
+    fontWeight: '600',
     textAlign: 'center',
   },
   defaultText: {
@@ -181,11 +224,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   outlineText: {
-    color: '#f1f5f9',
+    color: '#f9fafb',
     fontSize: 16,
   },
   ghostText: {
-    color: '#f1f5f9',
+    color: '#f9fafb',
     fontSize: 16,
   },
   smText: {

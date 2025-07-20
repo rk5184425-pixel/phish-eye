@@ -1,9 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface CardProps {
   children: React.ReactNode;
   style?: any;
+  animated?: boolean;
+  delay?: number;
 }
 
 interface CardHeaderProps {
@@ -26,7 +29,18 @@ interface CardContentProps {
   style?: any;
 }
 
-export function Card({ children, style }: CardProps) {
+export function Card({ children, style, animated = false, delay = 0 }: CardProps) {
+  if (animated) {
+    return (
+      <Animated.View 
+        entering={FadeInUp.delay(delay).springify()}
+        style={[styles.card, style]}
+      >
+        {children}
+      </Animated.View>
+    );
+  }
+
   return (
     <View style={[styles.card, style]}>
       {children}
@@ -68,34 +82,32 @@ export function CardContent({ children, style }: CardContentProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#334155',
-    backgroundColor: '#1e293b',
+    borderColor: '#374151',
+    backgroundColor: '#1f2937',
     padding: 24,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 12,
   },
   header: {
     flexDirection: 'column',
-    marginBottom: 24,
+    marginBottom: 20,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#f1f5f9',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#f9fafb',
     marginBottom: 8,
+    letterSpacing: -0.5,
   },
   description: {
-    fontSize: 14,
-    color: '#94a3b8',
-    lineHeight: 20,
+    fontSize: 15,
+    color: '#9ca3af',
+    lineHeight: 22,
   },
   content: {
     paddingTop: 0,
